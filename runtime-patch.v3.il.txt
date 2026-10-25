@@ -1,0 +1,1862 @@
+METHOD Em8RuntimePatch::get_StatusPath TOKEN 0x06000001
+  IL_0000: call System.AppDomain get_CurrentDomain()
+  IL_0005: callvirt System.String get_BaseDirectory()
+  IL_000a: ldstr "Em8bgzI1pI.runtime-patch.v3.status.txt"
+  IL_000f: call System.String Combine(System.String, System.String)
+  IL_0014: ret 
+METHOD Em8RuntimePatch::Status TOKEN 0x06000002
+  IL_0000: call System.String get_StatusPath()
+  IL_0005: call System.DateTime get_UtcNow()
+  IL_000a: stloc.0 
+  IL_000b: ldloca.s 0
+  IL_000d: ldstr "o"
+  IL_0012: call System.String ToString(System.String)
+  IL_0017: ldstr " "
+  IL_001c: ldarg.0 
+  IL_001d: call System.String get_NewLine()
+  IL_0022: call System.String Concat(System.String, System.String, System.String, System.String)
+  IL_0027: call Void AppendAllText(System.String, System.String)
+  IL_002c: leave.s IL_0031
+  IL_002e: pop 
+  IL_002f: leave.s IL_0031
+  IL_0031: ret 
+METHOD Em8RuntimePatch::VerifyOriginal TOKEN 0x06000003
+  IL_0000: ldarg.0 
+  IL_0001: ldc.i4.3 
+  IL_0002: ldc.i4.1 
+  IL_0003: ldc.i4.1 
+  IL_0004: newobj Void .ctor(System.String, System.IO.FileMode, System.IO.FileAccess, System.IO.FileShare)
+  IL_0009: stloc.0 
+  IL_000a: call System.Security.Cryptography.SHA256 Create()
+  IL_000f: stloc.2 
+  IL_0010: ldloc.2 
+  IL_0011: ldloc.0 
+  IL_0012: callvirt Byte[] ComputeHash(System.IO.Stream)
+  IL_0017: call System.String ToString(Byte[])
+  IL_001c: ldstr "-"
+  IL_0021: ldstr ""
+  IL_0026: callvirt System.String Replace(System.String, System.String)
+  IL_002b: callvirt System.String ToLowerInvariant()
+  IL_0030: stloc.1 
+  IL_0031: leave.s IL_003d
+  IL_0033: ldloc.2 
+  IL_0034: brfalse.s IL_003c
+  IL_0036: ldloc.2 
+  IL_0037: callvirt Void Dispose()
+  IL_003c: endfinally 
+  IL_003d: ldloc.1 
+  IL_003e: ldstr "95f7177d5cca8524eaaa28da743a72b994dc4a58409684334210c38f45c841fd"
+  IL_0043: call Boolean op_Inequality(System.String, System.String)
+  IL_0048: brfalse.s IL_0055
+  IL_004a: ldstr "Em8bgzI1pI.exe ne correspond pas au fichier original attendu. Aucun lancement effectue."
+  IL_004f: newobj Void .ctor(System.String)
+  IL_0054: throw 
+  IL_0055: leave.s IL_0061
+  IL_0057: ldloc.0 
+  IL_0058: brfalse.s IL_0060
+  IL_005a: ldloc.0 
+  IL_005b: callvirt Void Dispose()
+  IL_0060: endfinally 
+  IL_0061: ret 
+METHOD Em8RuntimePatch::Main TOKEN 0x06000004
+  IL_0000: ldstr "verify"
+  IL_0005: stloc.0 
+  IL_0006: ldnull 
+  IL_0007: stloc.1 
+  IL_0008: ldnull 
+  IL_0009: stloc.2 
+  IL_000a: ldc.i4.0 
+  IL_000b: stloc.3 
+  IL_000c: call System.AppDomain get_CurrentDomain()
+  IL_0011: callvirt System.String get_BaseDirectory()
+  IL_0016: ldstr "Em8bgzI1pI.exe"
+  IL_001b: call System.String Combine(System.String, System.String)
+  IL_0020: stloc.s 4
+  IL_0022: call System.Security.Cryptography.SHA256 Create()
+  IL_0027: stloc.s 6
+  IL_0029: ldloc.s 6
+  IL_002b: call System.Text.Encoding get_UTF8()
+  IL_0030: ldloc.s 4
+  IL_0032: call System.String GetFullPath(System.String)
+  IL_0037: callvirt System.String ToUpperInvariant()
+  IL_003c: callvirt Byte[] GetBytes(System.String)
+  IL_0041: callvirt Byte[] ComputeHash(Byte[])
+  IL_0046: call System.String ToString(Byte[])
+  IL_004b: ldstr "-"
+  IL_0050: ldstr ""
+  IL_0055: callvirt System.String Replace(System.String, System.String)
+  IL_005a: stloc.s 5
+  IL_005c: leave.s IL_006a
+  IL_005e: ldloc.s 6
+  IL_0060: brfalse.s IL_0069
+  IL_0062: ldloc.s 6
+  IL_0064: callvirt Void Dispose()
+  IL_0069: endfinally 
+  IL_006a: ldc.i4.0 
+  IL_006b: ldstr "Local\Em8RuntimePatch-"
+  IL_0070: ldloc.s 5
+  IL_0072: call System.String Concat(System.String, System.String)
+  IL_0077: newobj Void .ctor(Boolean, System.String)
+  IL_007c: stloc.2 
+  IL_007d: ldloc.2 
+  IL_007e: ldc.i4.0 
+  IL_007f: callvirt Boolean WaitOne(Int32)
+  IL_0084: stloc.3 
+  IL_0085: leave.s IL_008c
+  IL_0087: pop 
+  IL_0088: ldc.i4.1 
+  IL_0089: stloc.3 
+  IL_008a: leave.s IL_008c
+  IL_008c: ldloc.3 
+  IL_008d: brtrue.s IL_009a
+  IL_008f: ldstr "Un outil attend ou suit deja ce loader. Garde une seule instance ouverte."
+  IL_0094: newobj Void .ctor(System.String)
+  IL_0099: throw 
+  IL_009a: ldloc.s 4
+  IL_009c: call Void VerifyOriginal(System.String)
+  IL_00a1: ldstr "wait-for-original"
+  IL_00a6: stloc.0 
+  IL_00a7: ldstr "Em8 v3 waiting up to 60 seconds for the manually started original; no process launch, no assigned job and no retained image-file lock"
+  IL_00ac: call Void Status(System.String)
+  IL_00b1: ldloc.s 4
+  IL_00b3: ldc.i4 60000
+  IL_00b8: call LoaderNativeObservation.Session WaitForExisting(System.String, Int32)
+  IL_00bd: stloc.s 7
+  IL_00bf: ldloc.s 7
+  IL_00c1: stloc.1 
+  IL_00c2: ldstr "Em8 v3 attached process id "
+  IL_00c7: ldloc.s 7
+  IL_00c9: callvirt UInt32 get_ProcessId()
+  IL_00ce: stloc.s 14
+  IL_00d0: ldloca.s 14
+  IL_00d2: call System.String ToString()
+  IL_00d7: ldstr "; process identity captured; process handles opened only for each operation"
+  IL_00dc: call System.String Concat(System.String, System.String, System.String)
+  IL_00e1: call Void Status(System.String)
+  IL_00e6: ldstr "baseline"
+  IL_00eb: stloc.0 
+  IL_00ec: ldc.i4 5000
+  IL_00f1: call Void Sleep(Int32)
+  IL_00f6: ldloc.s 7
+  IL_00f8: callvirt UInt32 get_ExitCode()
+  IL_00fd: stloc.s 8
+  IL_00ff: leave.s IL_012b
+  IL_0101: stloc.s 9
+  IL_0103: ldloc.s 9
+  IL_0105: callvirt Int32 get_NativeErrorCode()
+  IL_010a: ldc.i4.s 87
+  IL_010c: beq.s IL_011c
+  IL_010e: ldloc.s 9
+  IL_0110: callvirt Int32 get_NativeErrorCode()
+  IL_0115: ldc.i4 1168
+  IL_011a: bne.un.s IL_0129
+  IL_011c: ldstr "Le loader s'est ferme avant le correctif. Aucune modification appliquee."
+  IL_0121: ldloc.s 9
+  IL_0123: newobj Void .ctor(System.String, System.Exception)
+  IL_0128: throw 
+  IL_0129: rethrow 
+  IL_012b: ldloc.s 8
+  IL_012d: ldc.i4 259
+  IL_0132: beq.s IL_0170
+  IL_0134: ldstr "Em8 v3 original exited BEFORE ANY PATCH, code 0x"
+  IL_0139: ldloca.s 8
+  IL_013b: ldstr "X8"
+  IL_0140: call System.String ToString(System.String)
+  IL_0145: call System.String Concat(System.String, System.String)
+  IL_014a: call Void Status(System.String)
+  IL_014f: ldstr "Em8bgzI1pI.exe s'est ferme avant toute modification (code 0x"
+  IL_0154: ldloca.s 8
+  IL_0156: ldstr "X8"
+  IL_015b: call System.String ToString(System.String)
+  IL_0160: ldstr "). Aucun patch n'a ete applique. Le diagnostic figure dans Em8bgzI1pI.runtime-patch.v3.status.txt."
+  IL_0165: call System.String Concat(System.String, System.String, System.String)
+  IL_016a: newobj Void .ctor(System.String)
+  IL_016f: throw 
+  IL_0170: ldstr "Em8 v3 manually started original still running after 5 seconds; beginning deferred patch readiness"
+  IL_0175: call Void Status(System.String)
+  IL_017a: ldstr "wait-for-unpacking"
+  IL_017f: stloc.0 
+  IL_0180: ldloc.s 7
+  IL_0182: ldsfld Byte[] Expected
+  IL_0187: ldsfld Byte[] Replacement
+  IL_018c: ldc.i4 15000
+  IL_0191: callvirt Boolean ApplyKnownPatch(Byte[], Byte[], Int32)
+  IL_0196: brtrue.s IL_01a3
+  IL_0198: ldstr "Le code attendu n'est pas devenu disponible dans le delai de 15 secondes."
+  IL_019d: newobj Void .ctor(System.String)
+  IL_01a2: throw 
+  IL_01a3: ldstr "Em8 v3 6-byte login branch, 4-byte no-selection state and 18-byte descriptor reuse applied and read back; both panels receive the same descriptor; remote loading remains unverified"
+  IL_01a8: call Void Status(System.String)
+  IL_01ad: ldstr "Em8 v3 tool completed and releases all handles; manually started Em8bgzI1pI.exe remains independent; license behavior remains unverified"
+  IL_01b2: call Void Status(System.String)
+  IL_01b7: ldstr "Correctif v3 applique. Teste la connexion. N/A signifie qu'aucun module n'a ete fourni ; le chargement distant reste a verifier."
+  IL_01bc: ldstr "Em8 v3 - correctif applique"
+  IL_01c1: ldc.i4.0 
+  IL_01c2: ldc.i4.s 64
+  IL_01c4: call System.Windows.Forms.DialogResult Show(System.String, System.String, System.Windows.Forms.MessageBoxButtons, System.Windows.Forms.MessageBoxIcon)
+  IL_01c9: pop 
+  IL_01ca: leave.s IL_01d8
+  IL_01cc: ldloc.s 7
+  IL_01ce: brfalse.s IL_01d7
+  IL_01d0: ldloc.s 7
+  IL_01d2: callvirt Void Dispose()
+  IL_01d7: endfinally 
+  IL_01d8: ldc.i4.0 
+  IL_01d9: stloc.s 13
+  IL_01db: leave IL_02a0
+  IL_01e0: stloc.s 10
+  IL_01e2: ldloc.1 
+  IL_01e3: brfalse.s IL_01ed
+  IL_01e5: ldloc.1 
+  IL_01e6: callvirt System.String get_LastNativeOperation()
+  IL_01eb: br.s IL_01f2
+  IL_01ed: ldstr "not-attached"
+  IL_01f2: stloc.s 11
+  IL_01f4: ldloc.s 10
+  IL_01f6: isinst System.ComponentModel.Win32Exception
+  IL_01fb: stloc.s 12
+  IL_01fd: ldc.i4.8 
+  IL_01fe: newarr System.String
+  IL_0203: stloc.s 15
+  IL_0205: ldloc.s 15
+  IL_0207: ldc.i4.0 
+  IL_0208: ldstr "Em8 v3 failed at "
+  IL_020d: stelem.ref 
+  IL_020e: ldloc.s 15
+  IL_0210: ldc.i4.1 
+  IL_0211: ldloc.0 
+  IL_0212: stelem.ref 
+  IL_0213: ldloc.s 15
+  IL_0215: ldc.i4.2 
+  IL_0216: ldstr "; operation="
+  IL_021b: stelem.ref 
+  IL_021c: ldloc.s 15
+  IL_021e: ldc.i4.3 
+  IL_021f: ldloc.s 11
+  IL_0221: stelem.ref 
+  IL_0222: ldloc.s 15
+  IL_0224: ldc.i4.4 
+  IL_0225: ldstr "; nativeError="
+  IL_022a: stelem.ref 
+  IL_022b: ldloc.s 15
+  IL_022d: ldc.i4.5 
+  IL_022e: ldloc.s 12
+  IL_0230: brfalse.s IL_0244
+  IL_0232: ldloc.s 12
+  IL_0234: callvirt Int32 get_NativeErrorCode()
+  IL_0239: stloc.s 16
+  IL_023b: ldloca.s 16
+  IL_023d: call System.String ToString()
+  IL_0242: br.s IL_0249
+  IL_0244: ldstr "n/a"
+  IL_0249: stelem.ref 
+  IL_024a: ldloc.s 15
+  IL_024c: ldc.i4.6 
+  IL_024d: ldstr ": "
+  IL_0252: stelem.ref 
+  IL_0253: ldloc.s 15
+  IL_0255: ldc.i4.7 
+  IL_0256: ldloc.s 10
+  IL_0258: callvirt System.String ToString()
+  IL_025d: stelem.ref 
+  IL_025e: ldloc.s 15
+  IL_0260: call System.String Concat(System.String[])
+  IL_0265: call Void Status(System.String)
+  IL_026a: ldloc.s 10
+  IL_026c: callvirt System.String get_Message()
+  IL_0271: ldstr "Em8 runtime patch v3 - "
+  IL_0276: ldloc.0 
+  IL_0277: call System.String Concat(System.String, System.String)
+  IL_027c: ldc.i4.0 
+  IL_027d: ldc.i4.s 16
+  IL_027f: call System.Windows.Forms.DialogResult Show(System.String, System.String, System.Windows.Forms.MessageBoxButtons, System.Windows.Forms.MessageBoxIcon)
+  IL_0284: pop 
+  IL_0285: ldc.i4.1 
+  IL_0286: stloc.s 13
+  IL_0288: leave.s IL_02a0
+  IL_028a: ldloc.3 
+  IL_028b: brfalse.s IL_0296
+  IL_028d: ldloc.2 
+  IL_028e: brfalse.s IL_0296
+  IL_0290: ldloc.2 
+  IL_0291: callvirt Void ReleaseMutex()
+  IL_0296: ldloc.2 
+  IL_0297: brfalse.s IL_029f
+  IL_0299: ldloc.2 
+  IL_029a: callvirt Void Dispose()
+  IL_029f: endfinally 
+  IL_02a0: ldloc.s 13
+  IL_02a2: ret 
+METHOD Em8RuntimePatch::.cctor TOKEN 0x06000005
+  IL_0000: ldc.i4.6 
+  IL_0001: newarr System.Byte
+  IL_0006: dup 
+  IL_0007: ldtoken __StaticArrayInitTypeSize=6 $$method0x6000033-1
+  IL_000c: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_0011: stsfld Byte[] Expected
+  IL_0016: ldc.i4.6 
+  IL_0017: newarr System.Byte
+  IL_001c: dup 
+  IL_001d: ldtoken __StaticArrayInitTypeSize=6 $$method0x6000033-2
+  IL_0022: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_0027: stsfld Byte[] Replacement
+  IL_002c: ret 
+METHOD LoaderNativeObservation.Session::get_LastNativeOperation TOKEN 0x06000006
+  IL_0000: ldarg.0 
+  IL_0001: ldfld System.String <LastNativeOperation>k__BackingField
+  IL_0006: ret 
+METHOD LoaderNativeObservation.Session::set_LastNativeOperation TOKEN 0x06000007
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: stfld System.String <LastNativeOperation>k__BackingField
+  IL_0007: ret 
+METHOD LoaderNativeObservation.Session::get_IntegrityUpdatesApplied TOKEN 0x06000008
+  IL_0000: ldarg.0 
+  IL_0001: ldfld Int32 <IntegrityUpdatesApplied>k__BackingField
+  IL_0006: ret 
+METHOD LoaderNativeObservation.Session::set_IntegrityUpdatesApplied TOKEN 0x06000009
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: stfld Int32 <IntegrityUpdatesApplied>k__BackingField
+  IL_0007: ret 
+METHOD LoaderNativeObservation.Session::NativeFailure TOKEN 0x0600000a
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: ldarg.2 
+  IL_0003: ldarg.0 
+  IL_0004: ldfld IntPtr process
+  IL_0009: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_000e: ret 
+METHOD LoaderNativeObservation.Session::NativeFailure TOKEN 0x0600000b
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: call Void set_LastNativeOperation(System.String)
+  IL_0007: ldstr ""
+  IL_000c: stloc.0 
+  IL_000d: ldarg.2 
+  IL_000e: ldc.i4.6 
+  IL_000f: bne.un IL_00f8
+  IL_0014: ldarg.3 
+  IL_0015: ldsfld IntPtr Zero
+  IL_001a: call Boolean op_Inequality(IntPtr, IntPtr)
+  IL_001f: brfalse IL_00f8
+  IL_0024: ldarg.3 
+  IL_0025: ldloca.s 1
+  IL_0027: call Boolean GetHandleInformation(IntPtr, UInt32 ByRef)
+  IL_002c: stloc.2 
+  IL_002d: ldloc.2 
+  IL_002e: brtrue.s IL_0037
+  IL_0030: call Int32 GetLastWin32Error()
+  IL_0035: br.s IL_0038
+  IL_0037: ldc.i4.0 
+  IL_0038: stloc.3 
+  IL_0039: ldarg.3 
+  IL_003a: ldc.i4.0 
+  IL_003b: call UInt32 WaitForSingleObject(IntPtr, UInt32)
+  IL_0040: stloc.s 4
+  IL_0042: ldloc.s 4
+  IL_0044: ldc.i4.m1 
+  IL_0045: beq.s IL_004a
+  IL_0047: ldc.i4.0 
+  IL_0048: br.s IL_004f
+  IL_004a: call Int32 GetLastWin32Error()
+  IL_004f: stloc.s 5
+  IL_0051: ldarg.3 
+  IL_0052: call UInt32 GetProcessId(IntPtr)
+  IL_0057: stloc.s 6
+  IL_0059: ldloc.s 6
+  IL_005b: brfalse.s IL_0060
+  IL_005d: ldc.i4.0 
+  IL_005e: br.s IL_0065
+  IL_0060: call Int32 GetLastWin32Error()
+  IL_0065: stloc.s 7
+  IL_0067: ldc.i4.s 12
+  IL_0069: newarr System.String
+  IL_006e: stloc.s 8
+  IL_0070: ldloc.s 8
+  IL_0072: ldc.i4.0 
+  IL_0073: ldstr "; descripteur valide="
+  IL_0078: stelem.ref 
+  IL_0079: ldloc.s 8
+  IL_007b: ldc.i4.1 
+  IL_007c: ldloca.s 2
+  IL_007e: call System.String ToString()
+  IL_0083: stelem.ref 
+  IL_0084: ldloc.s 8
+  IL_0086: ldc.i4.2 
+  IL_0087: ldstr ", handleError="
+  IL_008c: stelem.ref 
+  IL_008d: ldloc.s 8
+  IL_008f: ldc.i4.3 
+  IL_0090: ldloca.s 3
+  IL_0092: call System.String ToString()
+  IL_0097: stelem.ref 
+  IL_0098: ldloc.s 8
+  IL_009a: ldc.i4.4 
+  IL_009b: ldstr ", wait=0x"
+  IL_00a0: stelem.ref 
+  IL_00a1: ldloc.s 8
+  IL_00a3: ldc.i4.5 
+  IL_00a4: ldloca.s 4
+  IL_00a6: ldstr "X8"
+  IL_00ab: call System.String ToString(System.String)
+  IL_00b0: stelem.ref 
+  IL_00b1: ldloc.s 8
+  IL_00b3: ldc.i4.6 
+  IL_00b4: ldstr ", waitError="
+  IL_00b9: stelem.ref 
+  IL_00ba: ldloc.s 8
+  IL_00bc: ldc.i4.7 
+  IL_00bd: ldloca.s 5
+  IL_00bf: call System.String ToString()
+  IL_00c4: stelem.ref 
+  IL_00c5: ldloc.s 8
+  IL_00c7: ldc.i4.8 
+  IL_00c8: ldstr ", pid="
+  IL_00cd: stelem.ref 
+  IL_00ce: ldloc.s 8
+  IL_00d0: ldc.i4.s 9
+  IL_00d2: ldloca.s 6
+  IL_00d4: call System.String ToString()
+  IL_00d9: stelem.ref 
+  IL_00da: ldloc.s 8
+  IL_00dc: ldc.i4.s 10
+  IL_00de: ldstr ", pidError="
+  IL_00e3: stelem.ref 
+  IL_00e4: ldloc.s 8
+  IL_00e6: ldc.i4.s 11
+  IL_00e8: ldloca.s 7
+  IL_00ea: call System.String ToString()
+  IL_00ef: stelem.ref 
+  IL_00f0: ldloc.s 8
+  IL_00f2: call System.String Concat(System.String[])
+  IL_00f7: stloc.0 
+  IL_00f8: ldarg.2 
+  IL_00f9: ldc.i4.6 
+  IL_00fa: newarr System.String
+  IL_00ff: stloc.s 9
+  IL_0101: ldloc.s 9
+  IL_0103: ldc.i4.0 
+  IL_0104: ldarg.1 
+  IL_0105: stelem.ref 
+  IL_0106: ldloc.s 9
+  IL_0108: ldc.i4.1 
+  IL_0109: ldstr " [Win32 "
+  IL_010e: stelem.ref 
+  IL_010f: ldloc.s 9
+  IL_0111: ldc.i4.2 
+  IL_0112: ldarga.s 2
+  IL_0114: call System.String ToString()
+  IL_0119: stelem.ref 
+  IL_011a: ldloc.s 9
+  IL_011c: ldc.i4.3 
+  IL_011d: ldstr "]: "
+  IL_0122: stelem.ref 
+  IL_0123: ldloc.s 9
+  IL_0125: ldc.i4.4 
+  IL_0126: ldarg.2 
+  IL_0127: newobj Void .ctor(Int32)
+  IL_012c: callvirt System.String get_Message()
+  IL_0131: stelem.ref 
+  IL_0132: ldloc.s 9
+  IL_0134: ldc.i4.5 
+  IL_0135: ldloc.0 
+  IL_0136: stelem.ref 
+  IL_0137: ldloc.s 9
+  IL_0139: call System.String Concat(System.String[])
+  IL_013e: newobj Void .ctor(Int32, System.String)
+  IL_0143: ret 
+METHOD LoaderNativeObservation.Session::InvalidNativeResult TOKEN 0x0600000c
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: call Void set_LastNativeOperation(System.String)
+  IL_0007: ldarg.1 
+  IL_0008: ldstr ": resultat natif incomplet."
+  IL_000d: call System.String Concat(System.String, System.String)
+  IL_0012: newobj Void .ctor(System.String)
+  IL_0017: ret 
+METHOD LoaderNativeObservation.Session::get_ProcessId TOKEN 0x0600000d
+  IL_0000: ldarg.0 
+  IL_0001: ldfld UInt32 <ProcessId>k__BackingField
+  IL_0006: ret 
+METHOD LoaderNativeObservation.Session::set_ProcessId TOKEN 0x0600000e
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: stfld UInt32 <ProcessId>k__BackingField
+  IL_0007: ret 
+METHOD LoaderNativeObservation.Session::OpenBoundProcess TOKEN 0x06000014
+  IL_0000: ldarg.0 
+  IL_0001: ldfld Boolean disposed
+  IL_0006: brfalse.s IL_0013
+  IL_0008: ldstr "Session"
+  IL_000d: newobj Void .ctor(System.String)
+  IL_0012: throw 
+  IL_0013: ldstr "OpenProcess("
+  IL_0018: ldarg.2 
+  IL_0019: ldstr ")"
+  IL_001e: call System.String Concat(System.String, System.String, System.String)
+  IL_0023: stloc.0 
+  IL_0024: ldarg.0 
+  IL_0025: ldloc.0 
+  IL_0026: call Void set_LastNativeOperation(System.String)
+  IL_002b: ldarg.1 
+  IL_002c: ldc.i4.0 
+  IL_002d: ldarg.0 
+  IL_002e: call UInt32 get_ProcessId()
+  IL_0033: call IntPtr OpenProcess(UInt32, Boolean, UInt32)
+  IL_0038: stloc.1 
+  IL_0039: ldloc.1 
+  IL_003a: ldsfld IntPtr Zero
+  IL_003f: call Boolean op_Equality(IntPtr, IntPtr)
+  IL_0044: brfalse.s IL_0058
+  IL_0046: ldarg.0 
+  IL_0047: ldloc.0 
+  IL_0048: call Int32 GetLastWin32Error()
+  IL_004d: ldsfld IntPtr Zero
+  IL_0052: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_0057: throw 
+  IL_0058: ldloc.1 
+  IL_0059: call UInt32 GetProcessId(IntPtr)
+  IL_005e: stloc.2 
+  IL_005f: ldloc.2 
+  IL_0060: brtrue.s IL_007f
+  IL_0062: ldarg.0 
+  IL_0063: ldstr "GetProcessId("
+  IL_0068: ldarg.2 
+  IL_0069: ldstr ")"
+  IL_006e: call System.String Concat(System.String, System.String, System.String)
+  IL_0073: call Int32 GetLastWin32Error()
+  IL_0078: ldloc.1 
+  IL_0079: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_007e: throw 
+  IL_007f: ldloc.2 
+  IL_0080: ldarg.0 
+  IL_0081: call UInt32 get_ProcessId()
+  IL_0086: beq.s IL_0093
+  IL_0088: ldstr "Le descripteur obtenu ne correspond pas au PID attendu."
+  IL_008d: newobj Void .ctor(System.String)
+  IL_0092: throw 
+  IL_0093: ldloc.1 
+  IL_0094: ldloca.s 3
+  IL_0096: ldloca.s 4
+  IL_0098: ldloca.s 5
+  IL_009a: ldloca.s 6
+  IL_009c: call Boolean GetProcessTimes(IntPtr, Int64 ByRef, Int64 ByRef, Int64 ByRef, Int64 ByRef)
+  IL_00a1: brtrue.s IL_00c0
+  IL_00a3: ldarg.0 
+  IL_00a4: ldstr "GetProcessTimes("
+  IL_00a9: ldarg.2 
+  IL_00aa: ldstr ")"
+  IL_00af: call System.String Concat(System.String, System.String, System.String)
+  IL_00b4: call Int32 GetLastWin32Error()
+  IL_00b9: ldloc.1 
+  IL_00ba: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_00bf: throw 
+  IL_00c0: ldarg.0 
+  IL_00c1: ldfld Int64 expectedCreationTime
+  IL_00c6: ldc.i4.0 
+  IL_00c7: conv.i8 
+  IL_00c8: beq.s IL_00de
+  IL_00ca: ldloc.3 
+  IL_00cb: ldarg.0 
+  IL_00cc: ldfld Int64 expectedCreationTime
+  IL_00d1: beq.s IL_00de
+  IL_00d3: ldstr "L'heure de creation du processus ne correspond plus a la cible. Aucune modification n'est effectuee."
+  IL_00d8: newobj Void .ctor(System.String)
+  IL_00dd: throw 
+  IL_00de: ldloc.1 
+  IL_00df: stloc.s 7
+  IL_00e1: leave.s IL_00ed
+  IL_00e3: pop 
+  IL_00e4: ldloc.1 
+  IL_00e5: call Boolean CloseHandle(IntPtr)
+  IL_00ea: pop 
+  IL_00eb: rethrow 
+  IL_00ed: ldloc.s 7
+  IL_00ef: ret 
+METHOD LoaderNativeObservation.Session::WaitForExisting TOKEN 0x06000015
+  IL_0000: ldarg.1 
+  IL_0001: ldc.i4.0 
+  IL_0002: blt.s IL_000c
+  IL_0004: ldarg.1 
+  IL_0005: ldc.i4 60000
+  IL_000a: ble.s IL_0017
+  IL_000c: ldstr "timeoutMilliseconds"
+  IL_0011: newobj Void .ctor(System.String)
+  IL_0016: throw 
+  IL_0017: call System.Diagnostics.Stopwatch StartNew()
+  IL_001c: stloc.0 
+  IL_001d: ldarg.0 
+  IL_001e: call LoaderNativeObservation.Session AttachExisting(System.String)
+  IL_0023: stloc.1 
+  IL_0024: leave.s IL_005f
+  IL_0026: pop 
+  IL_0027: ldloc.0 
+  IL_0028: callvirt Int64 get_ElapsedMilliseconds()
+  IL_002d: ldarg.1 
+  IL_002e: conv.i8 
+  IL_002f: blt.s IL_003c
+  IL_0031: ldstr "Aucun Em8bgzI1pI.exe original detecte dans le delai. Lance cet outil en premier, puis ouvre Em8bgzI1pI.exe original dans le meme dossier avant 60 secondes."
+  IL_0036: newobj Void .ctor(System.String)
+  IL_003b: throw 
+  IL_003c: ldc.i4.1 
+  IL_003d: conv.i8 
+  IL_003e: ldc.i4 200
+  IL_0043: conv.i8 
+  IL_0044: ldarg.1 
+  IL_0045: conv.i8 
+  IL_0046: ldloc.0 
+  IL_0047: callvirt Int64 get_ElapsedMilliseconds()
+  IL_004c: sub 
+  IL_004d: call Int64 Min(Int64, Int64)
+  IL_0052: call Int64 Max(Int64, Int64)
+  IL_0057: conv.i4 
+  IL_0058: call Void Sleep(Int32)
+  IL_005d: leave.s IL_001d
+  IL_005f: ldloc.1 
+  IL_0060: ret 
+METHOD LoaderNativeObservation.Session::AttachExisting TOKEN 0x06000016
+  IL_0000: ldarg.0 
+  IL_0001: call System.String GetFullPath(System.String)
+  IL_0006: stloc.0 
+  IL_0007: newobj Void .ctor()
+  IL_000c: stloc.1 
+  IL_000d: ldarg.0 
+  IL_000e: call System.String GetFileNameWithoutExtension(System.String)
+  IL_0013: call System.Diagnostics.Process[] GetProcessesByName(System.String)
+  IL_0018: stloc.s 6
+  IL_001a: ldc.i4.0 
+  IL_001b: stloc.s 7
+  IL_001d: br.s IL_005f
+  IL_001f: ldloc.s 6
+  IL_0021: ldloc.s 7
+  IL_0023: ldelem.ref 
+  IL_0024: stloc.2 
+  IL_0025: ldc.i4.0 
+  IL_0026: stloc.3 
+  IL_0027: ldloc.2 
+  IL_0028: callvirt System.Diagnostics.ProcessModule get_MainModule()
+  IL_002d: callvirt System.String get_FileName()
+  IL_0032: call System.String GetFullPath(System.String)
+  IL_0037: ldloc.0 
+  IL_0038: ldc.i4.5 
+  IL_0039: call Boolean Equals(System.String, System.String, System.StringComparison)
+  IL_003e: stloc.3 
+  IL_003f: leave.s IL_0047
+  IL_0041: pop 
+  IL_0042: leave.s IL_0047
+  IL_0044: pop 
+  IL_0045: leave.s IL_0047
+  IL_0047: ldloc.3 
+  IL_0048: brfalse.s IL_0053
+  IL_004a: ldloc.1 
+  IL_004b: ldloc.2 
+  IL_004c: callvirt Void Add(System.Diagnostics.Process)
+  IL_0051: br.s IL_0059
+  IL_0053: ldloc.2 
+  IL_0054: callvirt Void Dispose()
+  IL_0059: ldloc.s 7
+  IL_005b: ldc.i4.1 
+  IL_005c: add 
+  IL_005d: stloc.s 7
+  IL_005f: ldloc.s 7
+  IL_0061: ldloc.s 6
+  IL_0063: ldlen 
+  IL_0064: conv.i4 
+  IL_0065: blt.s IL_001f
+  IL_0067: ldnull 
+  IL_0068: stloc.s 4
+  IL_006a: ldloc.1 
+  IL_006b: callvirt Int32 get_Count()
+  IL_0070: brtrue.s IL_0078
+  IL_0072: newobj Void .ctor()
+  IL_0077: throw 
+  IL_0078: ldloc.1 
+  IL_0079: callvirt Int32 get_Count()
+  IL_007e: ldc.i4.1 
+  IL_007f: ble.s IL_008c
+  IL_0081: ldstr "Plusieurs Em8bgzI1pI.exe originaux sont ouverts dans ce dossier. Ferme les instances supplementaires, puis relance cet outil."
+  IL_0086: newobj Void .ctor(System.String)
+  IL_008b: throw 
+  IL_008c: newobj Void .ctor()
+  IL_0091: stloc.s 4
+  IL_0093: ldloc.s 4
+  IL_0095: ldloc.1 
+  IL_0096: ldc.i4.0 
+  IL_0097: callvirt System.Diagnostics.Process get_Item(Int32)
+  IL_009c: callvirt Int32 get_Id()
+  IL_00a1: callvirt Void set_ProcessId(UInt32)
+  IL_00a6: ldloc.s 4
+  IL_00a8: ldloc.1 
+  IL_00a9: ldc.i4.0 
+  IL_00aa: callvirt System.Diagnostics.Process get_Item(Int32)
+  IL_00af: callvirt System.Diagnostics.ProcessModule get_MainModule()
+  IL_00b4: callvirt IntPtr get_BaseAddress()
+  IL_00b9: stloc.s 8
+  IL_00bb: ldloca.s 8
+  IL_00bd: call Int64 ToInt64()
+  IL_00c2: stfld Int64 capturedImageBase
+  IL_00c7: ldloc.s 4
+  IL_00c9: ldfld Int64 capturedImageBase
+  IL_00ce: ldc.i4.0 
+  IL_00cf: conv.i8 
+  IL_00d0: bne.un.s IL_00dd
+  IL_00d2: ldstr "Le module original ne possede pas d'adresse de base valide."
+  IL_00d7: newobj Void .ctor(System.String)
+  IL_00dc: throw 
+  IL_00dd: ldloc.s 4
+  IL_00df: ldloc.1 
+  IL_00e0: ldc.i4.0 
+  IL_00e1: callvirt System.Diagnostics.Process get_Item(Int32)
+  IL_00e6: callvirt System.DateTime get_StartTime()
+  IL_00eb: stloc.s 9
+  IL_00ed: ldloca.s 9
+  IL_00ef: call Int64 ToFileTimeUtc()
+  IL_00f4: stfld Int64 expectedCreationTime
+  IL_00f9: ldloc.s 4
+  IL_00fb: ldc.i4.1 
+  IL_00fc: stfld Boolean attachedExisting
+  IL_0101: leave.s IL_0137
+  IL_0103: ldloc.1 
+  IL_0104: callvirt Enumerator GetEnumerator()
+  IL_0109: stloc.s 10
+  IL_010b: br.s IL_011d
+  IL_010d: ldloca.s 10
+  IL_010f: call System.Diagnostics.Process get_Current()
+  IL_0114: stloc.s 5
+  IL_0116: ldloc.s 5
+  IL_0118: callvirt Void Dispose()
+  IL_011d: ldloca.s 10
+  IL_011f: call Boolean MoveNext()
+  IL_0124: brtrue.s IL_010d
+  IL_0126: leave.s IL_0136
+  IL_0128: ldloca.s 10
+  IL_012a: constrained. System.Collections.Generic.List`1+Enumerator[System.Diagnostics.Process]
+  IL_0130: callvirt Void Dispose()
+  IL_0135: endfinally 
+  IL_0136: endfinally 
+  IL_0137: ldloc.s 4
+  IL_0139: ret 
+METHOD LoaderNativeObservation.Session::get_ExitCode TOKEN 0x06000023
+  IL_0000: ldarg.0 
+  IL_0001: ldfld Boolean attachedExisting
+  IL_0006: brtrue.s IL_0010
+  IL_0008: ldarg.0 
+  IL_0009: ldfld IntPtr process
+  IL_000e: br.s IL_0020
+  IL_0010: ldarg.0 
+  IL_0011: ldc.i4 1052672
+  IL_0016: ldstr "suivi ponctuel"
+  IL_001b: call IntPtr OpenBoundProcess(UInt32, System.String)
+  IL_0020: stloc.0 
+  IL_0021: ldarg.0 
+  IL_0022: ldstr "GetExitCodeProcess"
+  IL_0027: call Void set_LastNativeOperation(System.String)
+  IL_002c: ldloc.0 
+  IL_002d: ldloca.s 1
+  IL_002f: call Boolean GetExitCodeProcess(IntPtr, UInt32 ByRef)
+  IL_0034: brtrue.s IL_0048
+  IL_0036: ldarg.0 
+  IL_0037: ldstr "GetExitCodeProcess"
+  IL_003c: call Int32 GetLastWin32Error()
+  IL_0041: ldloc.0 
+  IL_0042: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_0047: throw 
+  IL_0048: ldloc.1 
+  IL_0049: stloc.2 
+  IL_004a: leave.s IL_0069
+  IL_004c: ldarg.0 
+  IL_004d: ldfld Boolean attachedExisting
+  IL_0052: brfalse.s IL_0068
+  IL_0054: ldloc.0 
+  IL_0055: ldsfld IntPtr Zero
+  IL_005a: call Boolean op_Inequality(IntPtr, IntPtr)
+  IL_005f: brfalse.s IL_0068
+  IL_0061: ldloc.0 
+  IL_0062: call Boolean CloseHandle(IntPtr)
+  IL_0067: pop 
+  IL_0068: endfinally 
+  IL_0069: ldloc.2 
+  IL_006a: ret 
+METHOD LoaderNativeObservation.Session::Equal TOKEN 0x0600002a
+  IL_0000: ldarg.0 
+  IL_0001: ldlen 
+  IL_0002: conv.i4 
+  IL_0003: ldarg.1 
+  IL_0004: ldlen 
+  IL_0005: conv.i4 
+  IL_0006: beq.s IL_000a
+  IL_0008: ldc.i4.0 
+  IL_0009: ret 
+  IL_000a: ldc.i4.0 
+  IL_000b: stloc.0 
+  IL_000c: br.s IL_001c
+  IL_000e: ldarg.0 
+  IL_000f: ldloc.0 
+  IL_0010: ldelem.u1 
+  IL_0011: ldarg.1 
+  IL_0012: ldloc.0 
+  IL_0013: ldelem.u1 
+  IL_0014: beq.s IL_0018
+  IL_0016: ldc.i4.0 
+  IL_0017: ret 
+  IL_0018: ldloc.0 
+  IL_0019: ldc.i4.1 
+  IL_001a: add 
+  IL_001b: stloc.0 
+  IL_001c: ldloc.0 
+  IL_001d: ldarg.0 
+  IL_001e: ldlen 
+  IL_001f: conv.i4 
+  IL_0020: blt.s IL_000e
+  IL_0022: ldc.i4.1 
+  IL_0023: ret 
+METHOD LoaderNativeObservation.Session::ReadExact TOKEN 0x0600002b
+  IL_0000: ldarg.0 
+  IL_0001: ldc.i4 4112
+  IL_0006: ldstr "lecture ponctuelle"
+  IL_000b: call IntPtr OpenBoundProcess(UInt32, System.String)
+  IL_0010: stloc.0 
+  IL_0011: ldarg.0 
+  IL_0012: ldloc.0 
+  IL_0013: ldarg.1 
+  IL_0014: ldarg.2 
+  IL_0015: ldstr "ReadProcessMemory(lecture ponctuelle)"
+  IL_001a: call Byte[] ReadWithHandle(IntPtr, IntPtr, Int32, System.String)
+  IL_001f: stloc.1 
+  IL_0020: leave.s IL_002a
+  IL_0022: ldloc.0 
+  IL_0023: call Boolean CloseHandle(IntPtr)
+  IL_0028: pop 
+  IL_0029: endfinally 
+  IL_002a: ldloc.1 
+  IL_002b: ret 
+METHOD LoaderNativeObservation.Session::ReadWithHandle TOKEN 0x0600002c
+  IL_0000: ldarg.3 
+  IL_0001: newarr System.Byte
+  IL_0006: stloc.0 
+  IL_0007: ldarg.0 
+  IL_0008: ldarg.s 4
+  IL_000a: call Void set_LastNativeOperation(System.String)
+  IL_000f: ldarg.1 
+  IL_0010: ldarg.2 
+  IL_0011: ldloc.0 
+  IL_0012: ldarg.3 
+  IL_0013: call UIntPtr op_Explicit(UInt32)
+  IL_0018: ldloca.s 1
+  IL_001a: call Boolean ReadProcessMemory(IntPtr, IntPtr, Byte[], UIntPtr, UIntPtr ByRef)
+  IL_001f: brtrue.s IL_004c
+  IL_0021: call Int32 GetLastWin32Error()
+  IL_0026: stloc.2 
+  IL_0027: ldloc.2 
+  IL_0028: ldc.i4 299
+  IL_002d: beq.s IL_003f
+  IL_002f: ldloc.2 
+  IL_0030: ldc.i4 487
+  IL_0035: beq.s IL_003f
+  IL_0037: ldloc.2 
+  IL_0038: ldc.i4 998
+  IL_003d: bne.un.s IL_0041
+  IL_003f: ldnull 
+  IL_0040: ret 
+  IL_0041: ldarg.0 
+  IL_0042: ldarg.s 4
+  IL_0044: ldloc.2 
+  IL_0045: ldarg.1 
+  IL_0046: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_004b: throw 
+  IL_004c: ldloca.s 1
+  IL_004e: call UInt64 ToUInt64()
+  IL_0053: ldarg.3 
+  IL_0054: conv.i8 
+  IL_0055: beq.s IL_0059
+  IL_0057: ldnull 
+  IL_0058: ret 
+  IL_0059: ldloc.0 
+  IL_005a: ret 
+METHOD LoaderNativeObservation.Session::WriteVerified TOKEN 0x0600002d
+  IL_0000: ldarg.0 
+  IL_0001: ldstr "WriteProcessMemory("
+  IL_0006: ldarg.s 4
+  IL_0008: ldstr ")"
+  IL_000d: call System.String Concat(System.String, System.String, System.String)
+  IL_0012: call Void set_LastNativeOperation(System.String)
+  IL_0017: ldarg.1 
+  IL_0018: ldarg.2 
+  IL_0019: ldarg.3 
+  IL_001a: ldarg.3 
+  IL_001b: ldlen 
+  IL_001c: conv.i4 
+  IL_001d: call UIntPtr op_Explicit(UInt32)
+  IL_0022: ldloca.s 0
+  IL_0024: call Boolean WriteProcessMemory(IntPtr, IntPtr, Byte[], UIntPtr, UIntPtr ByRef)
+  IL_0029: brtrue.s IL_003e
+  IL_002b: ldarg.0 
+  IL_002c: ldarg.0 
+  IL_002d: call System.String get_LastNativeOperation()
+  IL_0032: call Int32 GetLastWin32Error()
+  IL_0037: ldarg.1 
+  IL_0038: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_003d: throw 
+  IL_003e: ldloca.s 0
+  IL_0040: call UInt64 ToUInt64()
+  IL_0045: ldarg.3 
+  IL_0046: ldlen 
+  IL_0047: conv.i4 
+  IL_0048: conv.i8 
+  IL_0049: beq.s IL_0058
+  IL_004b: ldarg.0 
+  IL_004c: ldarg.0 
+  IL_004d: call System.String get_LastNativeOperation()
+  IL_0052: call System.InvalidOperationException InvalidNativeResult(System.String)
+  IL_0057: throw 
+  IL_0058: ldarg.0 
+  IL_0059: ldstr "FlushInstructionCache("
+  IL_005e: ldarg.s 4
+  IL_0060: ldstr ")"
+  IL_0065: call System.String Concat(System.String, System.String, System.String)
+  IL_006a: call Void set_LastNativeOperation(System.String)
+  IL_006f: ldarg.1 
+  IL_0070: ldarg.2 
+  IL_0071: ldarg.3 
+  IL_0072: ldlen 
+  IL_0073: conv.i4 
+  IL_0074: call UIntPtr op_Explicit(UInt32)
+  IL_0079: call Boolean FlushInstructionCache(IntPtr, IntPtr, UIntPtr)
+  IL_007e: brtrue.s IL_0093
+  IL_0080: ldarg.0 
+  IL_0081: ldarg.0 
+  IL_0082: call System.String get_LastNativeOperation()
+  IL_0087: call Int32 GetLastWin32Error()
+  IL_008c: ldarg.1 
+  IL_008d: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_0092: throw 
+  IL_0093: ldarg.0 
+  IL_0094: ldarg.1 
+  IL_0095: ldarg.2 
+  IL_0096: ldarg.3 
+  IL_0097: ldlen 
+  IL_0098: conv.i4 
+  IL_0099: ldstr "ReadProcessMemory("
+  IL_009e: ldarg.s 4
+  IL_00a0: ldstr "-verification)"
+  IL_00a5: call System.String Concat(System.String, System.String, System.String)
+  IL_00aa: call Byte[] ReadWithHandle(IntPtr, IntPtr, Int32, System.String)
+  IL_00af: dup 
+  IL_00b0: brtrue.s IL_00b9
+  IL_00b2: pop 
+  IL_00b3: ldc.i4.0 
+  IL_00b4: newarr System.Byte
+  IL_00b9: ldarg.3 
+  IL_00ba: call Boolean Equal(Byte[], Byte[])
+  IL_00bf: brtrue.s IL_00d8
+  IL_00c1: ldstr "Verification de l'ecriture incorrecte : "
+  IL_00c6: ldarg.s 4
+  IL_00c8: ldstr "."
+  IL_00cd: call System.String Concat(System.String, System.String, System.String)
+  IL_00d2: newobj Void .ctor(System.String)
+  IL_00d7: throw 
+  IL_00d8: ret 
+METHOD LoaderNativeObservation.Session::ApplyKnownPatch TOKEN 0x0600002e
+  IL_0000: ldarg.1 
+  IL_0001: brfalse.s IL_0012
+  IL_0003: ldarg.2 
+  IL_0004: brfalse.s IL_0012
+  IL_0006: ldarg.1 
+  IL_0007: ldlen 
+  IL_0008: conv.i4 
+  IL_0009: ldc.i4.6 
+  IL_000a: bne.un.s IL_0012
+  IL_000c: ldarg.2 
+  IL_000d: ldlen 
+  IL_000e: conv.i4 
+  IL_000f: ldc.i4.6 
+  IL_0010: beq.s IL_001d
+  IL_0012: ldstr "Expected the reviewed 6-byte Em8 span."
+  IL_0017: newobj Void .ctor(System.String)
+  IL_001c: throw 
+  IL_001d: ldarg.0 
+  IL_001e: ldfld Int64 capturedImageBase
+  IL_0023: stloc.0 
+  IL_0024: ldloc.0 
+  IL_0025: ldc.i4.0 
+  IL_0026: conv.i8 
+  IL_0027: bne.un.s IL_0034
+  IL_0029: ldstr "Base du processus cible indisponible."
+  IL_002e: newobj Void .ctor(System.String)
+  IL_0033: throw 
+  IL_0034: ldloca.s 1
+  IL_0036: ldloc.0 
+  IL_0037: ldc.i4 129182
+  IL_003c: conv.i8 
+  IL_003d: add 
+  IL_003e: call Void .ctor(Int64)
+  IL_0043: ldloca.s 2
+  IL_0045: ldloc.0 
+  IL_0046: ldc.i4 3633152
+  IL_004b: conv.i8 
+  IL_004c: add 
+  IL_004d: call Void .ctor(Int64)
+  IL_0052: ldloca.s 3
+  IL_0054: ldloc.0 
+  IL_0055: ldc.i4 9298801
+  IL_005a: conv.i8 
+  IL_005b: add 
+  IL_005c: call Void .ctor(Int64)
+  IL_0061: ldloca.s 4
+  IL_0063: ldloc.0 
+  IL_0064: ldc.i4 3508804
+  IL_0069: conv.i8 
+  IL_006a: add 
+  IL_006b: call Void .ctor(Int64)
+  IL_0070: ldloca.s 5
+  IL_0072: ldloc.0 
+  IL_0073: ldc.i4 234341
+  IL_0078: conv.i8 
+  IL_0079: add 
+  IL_007a: call Void .ctor(Int64)
+  IL_007f: ldc.i4.s 16
+  IL_0081: newarr System.Byte
+  IL_0086: dup 
+  IL_0087: ldtoken __StaticArrayInitTypeSize=16 $$method0x600002d-1
+  IL_008c: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_0091: stloc.s 6
+  IL_0093: ldc.i4.s 32
+  IL_0095: newarr System.Byte
+  IL_009a: dup 
+  IL_009b: ldtoken __StaticArrayInitTypeSize=32 $$method0x600002d-2
+  IL_00a0: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_00a5: stloc.s 7
+  IL_00a7: ldc.i4.s 18
+  IL_00a9: newarr System.Byte
+  IL_00ae: dup 
+  IL_00af: ldtoken __StaticArrayInitTypeSize=18 $$method0x600002d-3
+  IL_00b4: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_00b9: stloc.s 8
+  IL_00bb: ldc.i4.s 18
+  IL_00bd: newarr System.Byte
+  IL_00c2: dup 
+  IL_00c3: ldtoken __StaticArrayInitTypeSize=18 $$method0x600002d-4
+  IL_00c8: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_00cd: stloc.s 9
+  IL_00cf: call System.Diagnostics.Stopwatch StartNew()
+  IL_00d4: stloc.s 10
+  IL_00d6: ldc.i4.m1 
+  IL_00d7: conv.i8 
+  IL_00d8: stloc.s 11
+  IL_00da: br IL_05f5
+  IL_00df: ldarg.0 
+  IL_00e0: call UInt32 get_ExitCode()
+  IL_00e5: ldc.i4 259
+  IL_00ea: beq.s IL_00f7
+  IL_00ec: ldstr "Em8bgzI1pI s'est ferme avant la modification."
+  IL_00f1: newobj Void .ctor(System.String)
+  IL_00f6: throw 
+  IL_00f7: ldarg.0 
+  IL_00f8: ldloc.s 5
+  IL_00fa: ldc.i4.s 18
+  IL_00fc: call Byte[] ReadExact(IntPtr, Int32)
+  IL_0101: dup 
+  IL_0102: brtrue.s IL_010b
+  IL_0104: pop 
+  IL_0105: ldc.i4.0 
+  IL_0106: newarr System.Byte
+  IL_010b: ldloc.s 8
+  IL_010d: call Boolean Equal(Byte[], Byte[])
+  IL_0112: brfalse.s IL_016a
+  IL_0114: ldarg.0 
+  IL_0115: ldloc.1 
+  IL_0116: ldc.i4.6 
+  IL_0117: call Byte[] ReadExact(IntPtr, Int32)
+  IL_011c: dup 
+  IL_011d: brtrue.s IL_0126
+  IL_011f: pop 
+  IL_0120: ldc.i4.0 
+  IL_0121: newarr System.Byte
+  IL_0126: ldarg.1 
+  IL_0127: call Boolean Equal(Byte[], Byte[])
+  IL_012c: brfalse.s IL_016a
+  IL_012e: ldarg.0 
+  IL_012f: ldloc.2 
+  IL_0130: ldloc.s 6
+  IL_0132: ldlen 
+  IL_0133: conv.i4 
+  IL_0134: call Byte[] ReadExact(IntPtr, Int32)
+  IL_0139: dup 
+  IL_013a: brtrue.s IL_0143
+  IL_013c: pop 
+  IL_013d: ldc.i4.0 
+  IL_013e: newarr System.Byte
+  IL_0143: ldloc.s 6
+  IL_0145: call Boolean Equal(Byte[], Byte[])
+  IL_014a: brfalse.s IL_016a
+  IL_014c: ldarg.0 
+  IL_014d: ldloc.3 
+  IL_014e: ldloc.s 7
+  IL_0150: ldlen 
+  IL_0151: conv.i4 
+  IL_0152: call Byte[] ReadExact(IntPtr, Int32)
+  IL_0157: dup 
+  IL_0158: brtrue.s IL_0161
+  IL_015a: pop 
+  IL_015b: ldc.i4.0 
+  IL_015c: newarr System.Byte
+  IL_0161: ldloc.s 7
+  IL_0163: call Boolean Equal(Byte[], Byte[])
+  IL_0168: br.s IL_016b
+  IL_016a: ldc.i4.0 
+  IL_016b: stloc.s 12
+  IL_016d: ldloc.s 12
+  IL_016f: brtrue.s IL_0181
+  IL_0171: ldc.i4.m1 
+  IL_0172: conv.i8 
+  IL_0173: stloc.s 11
+  IL_0175: ldc.i4.s 20
+  IL_0177: call Void Sleep(Int32)
+  IL_017c: br IL_05f5
+  IL_0181: ldloc.s 11
+  IL_0183: ldc.i4.0 
+  IL_0184: conv.i8 
+  IL_0185: bge.s IL_0190
+  IL_0187: ldloc.s 10
+  IL_0189: callvirt Int64 get_ElapsedMilliseconds()
+  IL_018e: stloc.s 11
+  IL_0190: ldloc.s 10
+  IL_0192: callvirt Int64 get_ElapsedMilliseconds()
+  IL_0197: ldloc.s 11
+  IL_0199: sub 
+  IL_019a: ldc.i4 1000
+  IL_019f: conv.i8 
+  IL_01a0: bge.s IL_01ae
+  IL_01a2: ldc.i4.s 20
+  IL_01a4: call Void Sleep(Int32)
+  IL_01a9: br IL_05f5
+  IL_01ae: ldarg.0 
+  IL_01af: ldloc.0 
+  IL_01b0: ldc.i4 4096
+  IL_01b5: conv.i8 
+  IL_01b6: add 
+  IL_01b7: newobj Void .ctor(Int64)
+  IL_01bc: ldc.i4 2672922
+  IL_01c1: call Byte[] ReadExact(IntPtr, Int32)
+  IL_01c6: stloc.s 13
+  IL_01c8: ldloc.s 13
+  IL_01ca: brtrue.s IL_01d7
+  IL_01cc: ldstr "Lecture incomplete de la section de code."
+  IL_01d1: newobj Void .ctor(System.String)
+  IL_01d6: throw 
+  IL_01d7: ldc.i4.0 
+  IL_01d8: stloc.s 14
+  IL_01da: br.s IL_01fe
+  IL_01dc: ldloc.s 13
+  IL_01de: ldc.i4 125086
+  IL_01e3: ldloc.s 14
+  IL_01e5: add 
+  IL_01e6: ldelem.u1 
+  IL_01e7: ldarg.1 
+  IL_01e8: ldloc.s 14
+  IL_01ea: ldelem.u1 
+  IL_01eb: beq.s IL_01f8
+  IL_01ed: ldstr "Le code cible a change avant la preparation."
+  IL_01f2: newobj Void .ctor(System.String)
+  IL_01f7: throw 
+  IL_01f8: ldloc.s 14
+  IL_01fa: ldc.i4.1 
+  IL_01fb: add 
+  IL_01fc: stloc.s 14
+  IL_01fe: ldloc.s 14
+  IL_0200: ldarg.1 
+  IL_0201: ldlen 
+  IL_0202: conv.i4 
+  IL_0203: blt.s IL_01dc
+  IL_0205: ldarg.0 
+  IL_0206: ldloc.s 4
+  IL_0208: ldc.i4.4 
+  IL_0209: call Byte[] ReadExact(IntPtr, Int32)
+  IL_020e: stloc.s 15
+  IL_0210: ldloc.s 15
+  IL_0212: brtrue.s IL_021f
+  IL_0214: ldstr "Lecture de la selection de module indisponible."
+  IL_0219: newobj Void .ctor(System.String)
+  IL_021e: throw 
+  IL_021f: ldloc.s 15
+  IL_0221: ldc.i4.0 
+  IL_0222: call Int32 ToInt32(Byte[], Int32)
+  IL_0227: stloc.s 16
+  IL_0229: ldloc.s 16
+  IL_022b: brfalse.s IL_023d
+  IL_022d: ldloc.s 16
+  IL_022f: ldc.i4.m1 
+  IL_0230: beq.s IL_023d
+  IL_0232: ldstr "Une selection de module est deja active. Ferme le loader puis relance le correctif avant l'original."
+  IL_0237: newobj Void .ctor(System.String)
+  IL_023c: throw 
+  IL_023d: newobj Void .ctor()
+  IL_0242: stloc.s 17
+  IL_0244: newobj Void .ctor()
+  IL_0249: stloc.s 18
+  IL_024b: ldnull 
+  IL_024c: stloc.s 19
+  IL_024e: ldsfld IntPtr Zero
+  IL_0253: stloc.s 20
+  IL_0255: ldc.i4.0 
+  IL_0256: stloc.s 21
+  IL_0258: ldc.i4.0 
+  IL_0259: stloc.s 22
+  IL_025b: ldc.i4.0 
+  IL_025c: stloc.s 23
+  IL_025e: ldc.i4.0 
+  IL_025f: stloc.s 24
+  IL_0261: ldc.i4.0 
+  IL_0262: stloc.s 25
+  IL_0264: ldarg.0 
+  IL_0265: ldc.i4 4152
+  IL_026a: ldstr "Em8bgzI1pI modification"
+  IL_026f: call IntPtr OpenBoundProcess(UInt32, System.String)
+  IL_0274: stloc.s 20
+  IL_0276: ldarg.0 
+  IL_0277: call UInt32 get_ProcessId()
+  IL_027c: call System.Diagnostics.Process GetProcessById(Int32)
+  IL_0281: stloc.s 19
+  IL_0283: ldloc.s 19
+  IL_0285: callvirt Void Refresh()
+  IL_028a: ldloc.s 19
+  IL_028c: callvirt System.Diagnostics.ProcessThreadCollection get_Threads()
+  IL_0291: callvirt System.Collections.IEnumerator GetEnumerator()
+  IL_0296: stloc.s 36
+  IL_0298: br.s IL_0312
+  IL_029a: ldloc.s 36
+  IL_029c: callvirt System.Object get_Current()
+  IL_02a1: castclass System.Diagnostics.ProcessThread
+  IL_02a6: stloc.s 26
+  IL_02a8: ldarg.0 
+  IL_02a9: ldstr "OpenThread"
+  IL_02ae: call Void set_LastNativeOperation(System.String)
+  IL_02b3: ldc.i4.2 
+  IL_02b4: ldc.i4.0 
+  IL_02b5: ldloc.s 26
+  IL_02b7: callvirt Int32 get_Id()
+  IL_02bc: call IntPtr OpenThread(UInt32, Boolean, UInt32)
+  IL_02c1: stloc.s 27
+  IL_02c3: ldloc.s 27
+  IL_02c5: ldsfld IntPtr Zero
+  IL_02ca: call Boolean op_Equality(IntPtr, IntPtr)
+  IL_02cf: brfalse.s IL_02e2
+  IL_02d1: ldarg.0 
+  IL_02d2: ldstr "OpenThread"
+  IL_02d7: call Int32 GetLastWin32Error()
+  IL_02dc: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32)
+  IL_02e1: throw 
+  IL_02e2: ldloc.s 27
+  IL_02e4: call UInt32 SuspendThread(IntPtr)
+  IL_02e9: ldc.i4.m1 
+  IL_02ea: bne.un.s IL_0309
+  IL_02ec: call Int32 GetLastWin32Error()
+  IL_02f1: stloc.s 28
+  IL_02f3: ldloc.s 27
+  IL_02f5: call Boolean CloseHandle(IntPtr)
+  IL_02fa: pop 
+  IL_02fb: ldarg.0 
+  IL_02fc: ldstr "SuspendThread"
+  IL_0301: ldloc.s 28
+  IL_0303: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32)
+  IL_0308: throw 
+  IL_0309: ldloc.s 17
+  IL_030b: ldloc.s 27
+  IL_030d: callvirt Void Add(IntPtr)
+  IL_0312: ldloc.s 36
+  IL_0314: callvirt Boolean MoveNext()
+  IL_0319: brtrue IL_029a
+  IL_031e: leave.s IL_0335
+  IL_0320: ldloc.s 36
+  IL_0322: isinst System.IDisposable
+  IL_0327: stloc.s 37
+  IL_0329: ldloc.s 37
+  IL_032b: brfalse.s IL_0334
+  IL_032d: ldloc.s 37
+  IL_032f: callvirt Void Dispose()
+  IL_0334: endfinally 
+  IL_0335: ldarg.0 
+  IL_0336: ldloc.s 20
+  IL_0338: ldloc.0 
+  IL_0339: ldc.i4 4096
+  IL_033e: conv.i8 
+  IL_033f: add 
+  IL_0340: newobj Void .ctor(Int64)
+  IL_0345: ldloc.s 13
+  IL_0347: ldlen 
+  IL_0348: conv.i4 
+  IL_0349: ldstr "ReadProcessMemory(before-commit)"
+  IL_034e: call Byte[] ReadWithHandle(IntPtr, IntPtr, Int32, System.String)
+  IL_0353: dup 
+  IL_0354: brtrue.s IL_035d
+  IL_0356: pop 
+  IL_0357: ldc.i4.0 
+  IL_0358: newarr System.Byte
+  IL_035d: ldloc.s 13
+  IL_035f: call Boolean Equal(Byte[], Byte[])
+  IL_0364: brfalse.s IL_038b
+  IL_0366: ldarg.0 
+  IL_0367: ldloc.s 20
+  IL_0369: ldloc.3 
+  IL_036a: ldloc.s 7
+  IL_036c: ldlen 
+  IL_036d: conv.i4 
+  IL_036e: ldstr "ReadProcessMemory(tail-before-commit)"
+  IL_0373: call Byte[] ReadWithHandle(IntPtr, IntPtr, Int32, System.String)
+  IL_0378: dup 
+  IL_0379: brtrue.s IL_0382
+  IL_037b: pop 
+  IL_037c: ldc.i4.0 
+  IL_037d: newarr System.Byte
+  IL_0382: ldloc.s 7
+  IL_0384: call Boolean Equal(Byte[], Byte[])
+  IL_0389: brtrue.s IL_0396
+  IL_038b: ldstr "Le code a change pendant la preparation. Aucun patch applique."
+  IL_0390: newobj Void .ctor(System.String)
+  IL_0395: throw 
+  IL_0396: ldarg.0 
+  IL_0397: ldloc.s 20
+  IL_0399: ldloc.s 4
+  IL_039b: ldc.i4.4 
+  IL_039c: ldstr "ReadProcessMemory(selection-before-commit)"
+  IL_03a1: call Byte[] ReadWithHandle(IntPtr, IntPtr, Int32, System.String)
+  IL_03a6: dup 
+  IL_03a7: brtrue.s IL_03b0
+  IL_03a9: pop 
+  IL_03aa: ldc.i4.0 
+  IL_03ab: newarr System.Byte
+  IL_03b0: ldloc.s 15
+  IL_03b2: call Boolean Equal(Byte[], Byte[])
+  IL_03b7: brtrue.s IL_03c4
+  IL_03b9: ldstr "La selection a change pendant la preparation. Aucun patch applique."
+  IL_03be: newobj Void .ctor(System.String)
+  IL_03c3: throw 
+  IL_03c4: ldarg.0 
+  IL_03c5: ldstr "VirtualProtectEx"
+  IL_03ca: call Void set_LastNativeOperation(System.String)
+  IL_03cf: ldloc.s 20
+  IL_03d1: ldloc.1 
+  IL_03d2: ldc.i4.6 
+  IL_03d3: call UIntPtr op_Explicit(UInt32)
+  IL_03d8: ldc.i4.s 64
+  IL_03da: ldloca.s 21
+  IL_03dc: call Boolean VirtualProtectEx(IntPtr, IntPtr, UIntPtr, UInt32, UInt32 ByRef)
+  IL_03e1: brtrue.s IL_03f7
+  IL_03e3: ldarg.0 
+  IL_03e4: ldarg.0 
+  IL_03e5: call System.String get_LastNativeOperation()
+  IL_03ea: call Int32 GetLastWin32Error()
+  IL_03ef: ldloc.s 20
+  IL_03f1: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_03f6: throw 
+  IL_03f7: ldc.i4.1 
+  IL_03f8: stloc.s 23
+  IL_03fa: ldarg.0 
+  IL_03fb: ldstr "VirtualProtectEx(module-descriptor)"
+  IL_0400: call Void set_LastNativeOperation(System.String)
+  IL_0405: ldloc.s 20
+  IL_0407: ldloc.s 5
+  IL_0409: ldc.i4.s 18
+  IL_040b: call UIntPtr op_Explicit(UInt32)
+  IL_0410: ldc.i4.s 64
+  IL_0412: ldloca.s 22
+  IL_0414: call Boolean VirtualProtectEx(IntPtr, IntPtr, UIntPtr, UInt32, UInt32 ByRef)
+  IL_0419: brtrue.s IL_042f
+  IL_041b: ldarg.0 
+  IL_041c: ldarg.0 
+  IL_041d: call System.String get_LastNativeOperation()
+  IL_0422: call Int32 GetLastWin32Error()
+  IL_0427: ldloc.s 20
+  IL_0429: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_042e: throw 
+  IL_042f: ldc.i4.1 
+  IL_0430: stloc.s 24
+  IL_0432: ldc.i4.1 
+  IL_0433: stloc.s 25
+  IL_0435: ldarg.0 
+  IL_0436: ldloc.s 20
+  IL_0438: ldloc.s 4
+  IL_043a: ldc.i4.4 
+  IL_043b: newarr System.Byte
+  IL_0440: dup 
+  IL_0441: ldtoken Int32 $$method0x600002d-5
+  IL_0446: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+  IL_044b: ldstr "no-module-selected"
+  IL_0450: call Void WriteVerified(IntPtr, IntPtr, Byte[], System.String)
+  IL_0455: ldarg.0 
+  IL_0456: ldloc.s 20
+  IL_0458: ldloc.1 
+  IL_0459: ldarg.2 
+  IL_045a: ldstr "local-login-branch"
+  IL_045f: call Void WriteVerified(IntPtr, IntPtr, Byte[], System.String)
+  IL_0464: ldarg.0 
+  IL_0465: ldloc.s 20
+  IL_0467: ldloc.s 5
+  IL_0469: ldloc.s 9
+  IL_046b: ldstr "reuse-selected-descriptor"
+  IL_0470: call Void WriteVerified(IntPtr, IntPtr, Byte[], System.String)
+  IL_0475: leave.s IL_04e6
+  IL_0477: stloc.s 29
+  IL_0479: ldloc.s 18
+  IL_047b: ldloc.s 29
+  IL_047d: callvirt Void Add(System.Exception)
+  IL_0482: ldloc.s 25
+  IL_0484: brfalse.s IL_04e4
+  IL_0486: ldarg.0 
+  IL_0487: ldloc.s 20
+  IL_0489: ldloc.1 
+  IL_048a: ldarg.1 
+  IL_048b: ldstr "rollback-login-branch"
+  IL_0490: call Void WriteVerified(IntPtr, IntPtr, Byte[], System.String)
+  IL_0495: leave.s IL_04a4
+  IL_0497: stloc.s 30
+  IL_0499: ldloc.s 18
+  IL_049b: ldloc.s 30
+  IL_049d: callvirt Void Add(System.Exception)
+  IL_04a2: leave.s IL_04a4
+  IL_04a4: ldarg.0 
+  IL_04a5: ldloc.s 20
+  IL_04a7: ldloc.s 5
+  IL_04a9: ldloc.s 8
+  IL_04ab: ldstr "rollback-module-descriptor"
+  IL_04b0: call Void WriteVerified(IntPtr, IntPtr, Byte[], System.String)
+  IL_04b5: leave.s IL_04c4
+  IL_04b7: stloc.s 31
+  IL_04b9: ldloc.s 18
+  IL_04bb: ldloc.s 31
+  IL_04bd: callvirt Void Add(System.Exception)
+  IL_04c2: leave.s IL_04c4
+  IL_04c4: ldarg.0 
+  IL_04c5: ldloc.s 20
+  IL_04c7: ldloc.s 4
+  IL_04c9: ldloc.s 15
+  IL_04cb: ldstr "rollback-module-selection"
+  IL_04d0: call Void WriteVerified(IntPtr, IntPtr, Byte[], System.String)
+  IL_04d5: leave.s IL_04e4
+  IL_04d7: stloc.s 32
+  IL_04d9: ldloc.s 18
+  IL_04db: ldloc.s 32
+  IL_04dd: callvirt Void Add(System.Exception)
+  IL_04e2: leave.s IL_04e4
+  IL_04e4: leave.s IL_04e6
+  IL_04e6: leave IL_05c9
+  IL_04eb: ldloc.s 24
+  IL_04ed: brfalse.s IL_051e
+  IL_04ef: ldloc.s 20
+  IL_04f1: ldloc.s 5
+  IL_04f3: ldc.i4.s 18
+  IL_04f5: call UIntPtr op_Explicit(UInt32)
+  IL_04fa: ldloc.s 22
+  IL_04fc: ldloca.s 33
+  IL_04fe: call Boolean VirtualProtectEx(IntPtr, IntPtr, UIntPtr, UInt32, UInt32 ByRef)
+  IL_0503: brtrue.s IL_051e
+  IL_0505: ldloc.s 18
+  IL_0507: ldarg.0 
+  IL_0508: ldstr "VirtualProtectEx(restore-module-descriptor)"
+  IL_050d: call Int32 GetLastWin32Error()
+  IL_0512: ldloc.s 20
+  IL_0514: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_0519: callvirt Void Add(System.Exception)
+  IL_051e: ldloc.s 23
+  IL_0520: brfalse.s IL_054f
+  IL_0522: ldloc.s 20
+  IL_0524: ldloc.1 
+  IL_0525: ldc.i4.6 
+  IL_0526: call UIntPtr op_Explicit(UInt32)
+  IL_052b: ldloc.s 21
+  IL_052d: ldloca.s 34
+  IL_052f: call Boolean VirtualProtectEx(IntPtr, IntPtr, UIntPtr, UInt32, UInt32 ByRef)
+  IL_0534: brtrue.s IL_054f
+  IL_0536: ldloc.s 18
+  IL_0538: ldarg.0 
+  IL_0539: ldstr "VirtualProtectEx(restore)"
+  IL_053e: call Int32 GetLastWin32Error()
+  IL_0543: ldloc.s 20
+  IL_0545: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_054a: callvirt Void Add(System.Exception)
+  IL_054f: ldloc.s 17
+  IL_0551: callvirt Int32 get_Count()
+  IL_0556: ldc.i4.1 
+  IL_0557: sub 
+  IL_0558: stloc.s 35
+  IL_055a: br.s IL_05a2
+  IL_055c: ldloc.s 17
+  IL_055e: ldloc.s 35
+  IL_0560: callvirt IntPtr get_Item(Int32)
+  IL_0565: call UInt32 ResumeThread(IntPtr)
+  IL_056a: ldc.i4.m1 
+  IL_056b: bne.un.s IL_058d
+  IL_056d: ldloc.s 18
+  IL_056f: ldarg.0 
+  IL_0570: ldstr "ResumeThread"
+  IL_0575: call Int32 GetLastWin32Error()
+  IL_057a: ldloc.s 17
+  IL_057c: ldloc.s 35
+  IL_057e: callvirt IntPtr get_Item(Int32)
+  IL_0583: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_0588: callvirt Void Add(System.Exception)
+  IL_058d: ldloc.s 17
+  IL_058f: ldloc.s 35
+  IL_0591: callvirt IntPtr get_Item(Int32)
+  IL_0596: call Boolean CloseHandle(IntPtr)
+  IL_059b: pop 
+  IL_059c: ldloc.s 35
+  IL_059e: ldc.i4.1 
+  IL_059f: sub 
+  IL_05a0: stloc.s 35
+  IL_05a2: ldloc.s 35
+  IL_05a4: ldc.i4.0 
+  IL_05a5: bge.s IL_055c
+  IL_05a7: ldloc.s 19
+  IL_05a9: brfalse.s IL_05b2
+  IL_05ab: ldloc.s 19
+  IL_05ad: callvirt Void Dispose()
+  IL_05b2: ldloc.s 20
+  IL_05b4: ldsfld IntPtr Zero
+  IL_05b9: call Boolean op_Inequality(IntPtr, IntPtr)
+  IL_05be: brfalse.s IL_05c8
+  IL_05c0: ldloc.s 20
+  IL_05c2: call Boolean CloseHandle(IntPtr)
+  IL_05c7: pop 
+  IL_05c8: endfinally 
+  IL_05c9: ldloc.s 18
+  IL_05cb: callvirt Int32 get_Count()
+  IL_05d0: ldc.i4.1 
+  IL_05d1: bne.un.s IL_05dc
+  IL_05d3: ldloc.s 18
+  IL_05d5: ldc.i4.0 
+  IL_05d6: callvirt System.Exception get_Item(Int32)
+  IL_05db: throw 
+  IL_05dc: ldloc.s 18
+  IL_05de: callvirt Int32 get_Count()
+  IL_05e3: ldc.i4.1 
+  IL_05e4: ble.s IL_05f3
+  IL_05e6: ldstr "Echec de modification ou de restauration."
+  IL_05eb: ldloc.s 18
+  IL_05ed: newobj Void .ctor(System.String, System.Collections.Generic.IEnumerable`1[System.Exception])
+  IL_05f2: throw 
+  IL_05f3: ldc.i4.1 
+  IL_05f4: ret 
+  IL_05f5: ldloc.s 10
+  IL_05f7: callvirt Int64 get_ElapsedMilliseconds()
+  IL_05fc: ldarg.3 
+  IL_05fd: conv.i8 
+  IL_05fe: blt IL_00df
+  IL_0603: ldc.i4.0 
+  IL_0604: ret 
+METHOD LoaderNativeObservation.Session::WaitForExit TOKEN 0x06000030
+  IL_0000: ldarg.0 
+  IL_0001: ldfld Boolean attachedExisting
+  IL_0006: brtrue.s IL_0010
+  IL_0008: ldarg.0 
+  IL_0009: ldfld IntPtr process
+  IL_000e: br.s IL_0020
+  IL_0010: ldarg.0 
+  IL_0011: ldc.i4 1052672
+  IL_0016: ldstr "attente ponctuelle"
+  IL_001b: call IntPtr OpenBoundProcess(UInt32, System.String)
+  IL_0020: stloc.0 
+  IL_0021: ldarg.0 
+  IL_0022: ldstr "WaitForSingleObject"
+  IL_0027: call Void set_LastNativeOperation(System.String)
+  IL_002c: ldloc.0 
+  IL_002d: ldarg.1 
+  IL_002e: call UInt32 WaitForSingleObject(IntPtr, UInt32)
+  IL_0033: stloc.1 
+  IL_0034: ldloc.1 
+  IL_0035: brtrue.s IL_003b
+  IL_0037: ldc.i4.1 
+  IL_0038: stloc.2 
+  IL_0039: leave.s IL_0076
+  IL_003b: ldloc.1 
+  IL_003c: ldc.i4 258
+  IL_0041: bne.un.s IL_0047
+  IL_0043: ldc.i4.0 
+  IL_0044: stloc.2 
+  IL_0045: leave.s IL_0076
+  IL_0047: ldarg.0 
+  IL_0048: ldstr "WaitForSingleObject"
+  IL_004d: call Int32 GetLastWin32Error()
+  IL_0052: ldloc.0 
+  IL_0053: call System.ComponentModel.Win32Exception NativeFailure(System.String, Int32, IntPtr)
+  IL_0058: throw 
+  IL_0059: ldarg.0 
+  IL_005a: ldfld Boolean attachedExisting
+  IL_005f: brfalse.s IL_0075
+  IL_0061: ldloc.0 
+  IL_0062: ldsfld IntPtr Zero
+  IL_0067: call Boolean op_Inequality(IntPtr, IntPtr)
+  IL_006c: brfalse.s IL_0075
+  IL_006e: ldloc.0 
+  IL_006f: call Boolean CloseHandle(IntPtr)
+  IL_0074: pop 
+  IL_0075: endfinally 
+  IL_0076: ldloc.2 
+  IL_0077: ret 
+METHOD LoaderNativeObservation.Session::PreserveChildrenAfterNormalExit TOKEN 0x06000031
+  IL_0000: ldarg.0 
+  IL_0001: ldc.i4.0 
+  IL_0002: call Boolean WaitForExit(UInt32)
+  IL_0007: brtrue.s IL_0014
+  IL_0009: ldstr "Target has not exited."
+  IL_000e: newobj Void .ctor(System.String)
+  IL_0013: throw 
+  IL_0014: ldarg.0 
+  IL_0015: ldfld IntPtr job
+  IL_001a: ldsfld IntPtr Zero
+  IL_001f: call Boolean op_Equality(IntPtr, IntPtr)
+  IL_0024: brfalse.s IL_0027
+  IL_0026: ret 
+  IL_0027: ldloca.s 0
+  IL_0029: initobj LoaderNativeObservation.ExtendedLimits
+  IL_002f: ldarg.0 
+  IL_0030: ldfld IntPtr job
+  IL_0035: ldc.i4.s 9
+  IL_0037: ldloca.s 0
+  IL_0039: ldtoken LoaderNativeObservation.ExtendedLimits
+  IL_003e: call System.Type GetTypeFromHandle(System.RuntimeTypeHandle)
+  IL_0043: call Int32 SizeOf(System.Type)
+  IL_0048: call Boolean SetInformationJobObject(IntPtr, Int32, LoaderNativeObservation.ExtendedLimits ByRef, UInt32)
+  IL_004d: brtrue.s IL_005a
+  IL_004f: call Int32 GetLastWin32Error()
+  IL_0054: newobj Void .ctor(Int32)
+  IL_0059: throw 
+  IL_005a: ret 
+METHOD LoaderNativeObservation.Session::Dispose TOKEN 0x06000032
+  IL_0000: ldarg.0 
+  IL_0001: ldc.i4.1 
+  IL_0002: stfld Boolean disposed
+  IL_0007: ldarg.0 
+  IL_0008: ldfld IntPtr job
+  IL_000d: ldsfld IntPtr Zero
+  IL_0012: call Boolean op_Inequality(IntPtr, IntPtr)
+  IL_0017: brfalse.s IL_0030
+  IL_0019: ldarg.0 
+  IL_001a: ldfld IntPtr job
+  IL_001f: call Boolean CloseHandle(IntPtr)
+  IL_0024: pop 
+  IL_0025: ldarg.0 
+  IL_0026: ldsfld IntPtr Zero
+  IL_002b: stfld IntPtr job
+  IL_0030: ldarg.0 
+  IL_0031: ldfld IntPtr process
+  IL_0036: ldsfld IntPtr Zero
+  IL_003b: call Boolean op_Inequality(IntPtr, IntPtr)
+  IL_0040: brfalse.s IL_0059
+  IL_0042: ldarg.0 
+  IL_0043: ldfld IntPtr process
+  IL_0048: call Boolean CloseHandle(IntPtr)
+  IL_004d: pop 
+  IL_004e: ldarg.0 
+  IL_004f: ldsfld IntPtr Zero
+  IL_0054: stfld IntPtr process
+  IL_0059: ret 
+METHOD LoaderNativeObservation.Session::.ctor TOKEN 0x0600000f
+  IL_0000: ldarg.0 
+  IL_0001: ldsfld IntPtr Zero
+  IL_0006: stfld IntPtr job
+  IL_000b: ldarg.0 
+  IL_000c: ldsfld IntPtr Zero
+  IL_0011: stfld IntPtr process
+  IL_0016: ldarg.0 
+  IL_0017: call Void .ctor()
+  IL_001c: ret 
+METHOD LoaderNativeObservation.Session::.ctor TOKEN 0x06000020
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: ldc.i4.1 
+  IL_0003: call Void .ctor(System.String, Boolean)
+  IL_0008: ret 
+METHOD LoaderNativeObservation.Session::.ctor TOKEN 0x06000021
+  IL_0000: ldarg.0 
+  IL_0001: ldarg.1 
+  IL_0002: ldarg.2 
+  IL_0003: ldnull 
+  IL_0004: call Void .ctor(System.String, Boolean, System.String)
+  IL_0009: ret 
+METHOD LoaderNativeObservation.Session::.ctor TOKEN 0x06000022
+  IL_0000: ldarg.0 
+  IL_0001: ldsfld IntPtr Zero
+  IL_0006: stfld IntPtr job
+  IL_000b: ldarg.0 
+  IL_000c: ldsfld IntPtr Zero
+  IL_0011: stfld IntPtr process
+  IL_0016: ldarg.0 
+  IL_0017: call Void .ctor()
+  IL_001c: ldarg.0 
+  IL_001d: ldsfld IntPtr Zero
+  IL_0022: ldnull 
+  IL_0023: call IntPtr CreateJobObject(IntPtr, System.String)
+  IL_0028: stfld IntPtr job
+  IL_002d: ldarg.0 
+  IL_002e: ldfld IntPtr job
+  IL_0033: ldsfld IntPtr Zero
+  IL_0038: call Boolean op_Equality(IntPtr, IntPtr)
+  IL_003d: brfalse.s IL_004a
+  IL_003f: call Int32 GetLastWin32Error()
+  IL_0044: newobj Void .ctor(Int32)
+  IL_0049: throw 
+  IL_004a: ldloca.s 0
+  IL_004c: initobj LoaderNativeObservation.ExtendedLimits
+  IL_0052: ldloca.s 0
+  IL_0054: ldflda LoaderNativeObservation.BasicLimits Basic
+  IL_0059: ldc.i4 8192
+  IL_005e: ldarg.2 
+  IL_005f: brtrue.s IL_0064
+  IL_0061: ldc.i4.0 
+  IL_0062: br.s IL_0065
+  IL_0064: ldc.i4.8 
+  IL_0065: or 
+  IL_0066: stfld UInt32 Flags
+  IL_006b: ldloca.s 0
+  IL_006d: ldflda LoaderNativeObservation.BasicLimits Basic
+  IL_0072: ldarg.2 
+  IL_0073: brtrue.s IL_0078
+  IL_0075: ldc.i4.0 
+  IL_0076: br.s IL_0079
+  IL_0078: ldc.i4.1 
+  IL_0079: stfld UInt32 ActiveProcessLimit
+  IL_007e: ldarg.0 
+  IL_007f: ldfld IntPtr job
+  IL_0084: ldc.i4.s 9
+  IL_0086: ldloca.s 0
+  IL_0088: ldtoken LoaderNativeObservation.ExtendedLimits
+  IL_008d: call System.Type GetTypeFromHandle(System.RuntimeTypeHandle)
+  IL_0092: call Int32 SizeOf(System.Type)
+  IL_0097: call Boolean SetInformationJobObject(IntPtr, Int32, LoaderNativeObservation.ExtendedLimits ByRef, UInt32)
+  IL_009c: brtrue.s IL_00a9
+  IL_009e: call Int32 GetLastWin32Error()
+  IL_00a3: newobj Void .ctor(Int32)
+  IL_00a8: throw 
+  IL_00a9: ldloca.s 1
+  IL_00ab: initobj LoaderNativeObservation.StartupInfo
+  IL_00b1: ldloca.s 1
+  IL_00b3: ldtoken LoaderNativeObservation.StartupInfo
+  IL_00b8: call System.Type GetTypeFromHandle(System.RuntimeTypeHandle)
+  IL_00bd: call Int32 SizeOf(System.Type)
+  IL_00c2: stfld UInt32 Size
+  IL_00c7: ldnull 
+  IL_00c8: stloc.3 
+  IL_00c9: ldarg.3 
+  IL_00ca: brfalse.s IL_0127
+  IL_00cc: ldarg.3 
+  IL_00cd: ldc.i4.2 
+  IL_00ce: ldc.i4.2 
+  IL_00cf: ldc.i4.3 
+  IL_00d0: newobj Void .ctor(System.String, System.IO.FileMode, System.IO.FileAccess, System.IO.FileShare)
+  IL_00d5: stloc.3 
+  IL_00d6: ldloc.3 
+  IL_00d7: callvirt Microsoft.Win32.SafeHandles.SafeFileHandle get_SafeFileHandle()
+  IL_00dc: callvirt IntPtr DangerousGetHandle()
+  IL_00e1: stloc.s 4
+  IL_00e3: ldloc.s 4
+  IL_00e5: ldc.i4.1 
+  IL_00e6: ldc.i4.1 
+  IL_00e7: call Boolean SetHandleInformation(IntPtr, UInt32, UInt32)
+  IL_00ec: brtrue.s IL_00f9
+  IL_00ee: call Int32 GetLastWin32Error()
+  IL_00f3: newobj Void .ctor(Int32)
+  IL_00f8: throw 
+  IL_00f9: ldloca.s 1
+  IL_00fb: dup 
+  IL_00fc: ldfld UInt32 Flags
+  IL_0101: ldc.i4 256
+  IL_0106: or 
+  IL_0107: stfld UInt32 Flags
+  IL_010c: ldloca.s 1
+  IL_010e: ldloc.s 4
+  IL_0110: stfld IntPtr StdOutput
+  IL_0115: ldloca.s 1
+  IL_0117: ldloc.s 4
+  IL_0119: stfld IntPtr StdError
+  IL_011e: ldloca.s 1
+  IL_0120: ldloc.s 4
+  IL_0122: stfld IntPtr StdInput
+  IL_0127: ldarg.1 
+  IL_0128: ldstr """
+  IL_012d: ldarg.1 
+  IL_012e: ldstr """
+  IL_0133: call System.String Concat(System.String, System.String, System.String)
+  IL_0138: newobj Void .ctor(System.String)
+  IL_013d: ldsfld IntPtr Zero
+  IL_0142: ldsfld IntPtr Zero
+  IL_0147: ldloc.3 
+  IL_0148: ldnull 
+  IL_0149: ceq 
+  IL_014b: ldc.i4.0 
+  IL_014c: ceq 
+  IL_014e: ldc.i4.4 
+  IL_014f: ldsfld IntPtr Zero
+  IL_0154: ldarg.1 
+  IL_0155: call System.String GetDirectoryName(System.String)
+  IL_015a: ldloca.s 1
+  IL_015c: ldloca.s 2
+  IL_015e: call Boolean CreateProcess(System.String, System.Text.StringBuilder, IntPtr, IntPtr, Boolean, UInt32, IntPtr, System.String, LoaderNativeObservation.StartupInfo ByRef, LoaderNativeObservation.ProcessInfo ByRef)
+  IL_0163: brtrue.s IL_0170
+  IL_0165: call Int32 GetLastWin32Error()
+  IL_016a: newobj Void .ctor(Int32)
+  IL_016f: throw 
+  IL_0170: leave.s IL_018f
+  IL_0172: ldloc.3 
+  IL_0173: brfalse.s IL_018e
+  IL_0175: ldloc.3 
+  IL_0176: callvirt Microsoft.Win32.SafeHandles.SafeFileHandle get_SafeFileHandle()
+  IL_017b: callvirt IntPtr DangerousGetHandle()
+  IL_0180: ldc.i4.1 
+  IL_0181: ldc.i4.0 
+  IL_0182: call Boolean SetHandleInformation(IntPtr, UInt32, UInt32)
+  IL_0187: pop 
+  IL_0188: ldloc.3 
+  IL_0189: callvirt Void Dispose()
+  IL_018e: endfinally 
+  IL_018f: ldarg.0 
+  IL_0190: ldloca.s 2
+  IL_0192: ldfld IntPtr Process
+  IL_0197: stfld IntPtr process
+  IL_019c: ldarg.0 
+  IL_019d: ldloca.s 2
+  IL_019f: ldfld UInt32 ProcessId
+  IL_01a4: call Void set_ProcessId(UInt32)
+  IL_01a9: ldarg.0 
+  IL_01aa: ldfld IntPtr job
+  IL_01af: ldarg.0 
+  IL_01b0: ldfld IntPtr process
+  IL_01b5: call Boolean AssignProcessToJobObject(IntPtr, IntPtr)
+  IL_01ba: brtrue.s IL_01c7
+  IL_01bc: call Int32 GetLastWin32Error()
+  IL_01c1: newobj Void .ctor(Int32)
+  IL_01c6: throw 
+  IL_01c7: ldloca.s 2
+  IL_01c9: ldfld IntPtr Thread
+  IL_01ce: call UInt32 ResumeThread(IntPtr)
+  IL_01d3: ldc.i4.m1 
+  IL_01d4: bne.un.s IL_01e1
+  IL_01d6: call Int32 GetLastWin32Error()
+  IL_01db: newobj Void .ctor(Int32)
+  IL_01e0: throw 
+  IL_01e1: leave.s IL_01f3
+  IL_01e3: pop 
+  IL_01e4: ldarg.0 
+  IL_01e5: ldfld IntPtr process
+  IL_01ea: ldc.i4.1 
+  IL_01eb: call Boolean TerminateProcess(IntPtr, UInt32)
+  IL_01f0: pop 
+  IL_01f1: rethrow 
+  IL_01f3: leave.s IL_0203
+  IL_01f5: ldloca.s 2
+  IL_01f7: ldfld IntPtr Thread
+  IL_01fc: call Boolean CloseHandle(IntPtr)
+  IL_0201: pop 
+  IL_0202: endfinally 
+  IL_0203: leave.s IL_020e
+  IL_0205: pop 
+  IL_0206: ldarg.0 
+  IL_0207: call Void Dispose()
+  IL_020c: rethrow 
+  IL_020e: ret 
+METHOD LoaderNativeObservation.Session+NoOriginalProcessException::.ctor TOKEN 0x06000033
+  IL_0000: ldarg.0 
+  IL_0001: ldstr "Aucun Em8bgzI1pI.exe original correspondant n'est ouvert."
+  IL_0006: call Void .ctor(System.String)
+  IL_000b: ret 

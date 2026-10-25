@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "targetSha256": "95f7177d5cca8524eaaa28da743a72b994dc4a58409684334210c38f45c841fd",
+  "method": "Static inspection of v3 CLR metadata and IL; no target execution",
+  "source": "runtime-patch.v3.il.txt",
+  "verified": {
+    "descriptorLookupRva": "0x39365",
+    "selectionIndexRva": "0x358a44",
+    "descriptorStride": 232,
+    "instructions": [
+      "movsxd rax, dword ptr [rip+0x31f6d8]",
+      "imul rdx, rax, 0xe8",
+      "add rdx, qword ptr [r13+0x10]"
+    ],
+    "v3Replacement": "mov rdx, rbx; 15 NOPs",
+    "selectionValueWrittenByV3": -1
+  },
+  "limitations": [
+    "The bytes are expected-original bytes embedded in v3, not a live reading of the original process.",
+    "This site computes a descriptor address; it is not a recovered module-loading call.",
+    "No matching loader process is currently running.",
+    "No isolated Windows cloud execution tool is connected to this session."
+  ],
+  "moduleLoadingCallAddress": null
+}
